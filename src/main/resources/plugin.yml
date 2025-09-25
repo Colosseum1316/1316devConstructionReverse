@@ -2,4 +2,3 @@ name: Unparser
 main: com.kyles1872.unparser.Unparser
 author: KyleS1872
 version: 1
-softdepend: [ MapParser ]

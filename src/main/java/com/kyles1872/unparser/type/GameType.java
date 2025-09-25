@@ -12,7 +12,6 @@ public enum GameType {
 
   // Non Games
   Lobby("Lobby"),
-  Event("Mineplex Event"),
   GemHunters("Gem Hunters"),
 
   // Games
