@@ -24,7 +24,7 @@ import java.util.Map;
  * @author Kyle
  */
 @SuppressWarnings("deprecation")
-public final class UnparserManager {
+public final class Unparser {
 
   public static void main(String[] args) throws Exception {
     unparseMap(GameType.valueOf(args[0]), new File(args[1]));
