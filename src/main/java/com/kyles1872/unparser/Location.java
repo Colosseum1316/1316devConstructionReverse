@@ -3,8 +3,6 @@ package com.kyles1872.unparser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static org.bukkit.Location.locToBlock;
-
 /**
  * @author Colosseum1316
  */
@@ -25,5 +23,10 @@ public final class Location {
 
   public int getBlockZ() {
     return locToBlock(this.z);
+  }
+
+  private static int locToBlock(double loc) {
+    final int floor = (int) loc;
+    return floor == loc ? floor : floor - (int) (Double.doubleToRawLongBits(loc) >>> 63);
   }
 }

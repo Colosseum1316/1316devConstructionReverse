@@ -1,12 +1,10 @@
 package com.kyles1872.unparser;
 
+import colosseum.utility.TeamNames;
 import colosseum.utility.WorldMapConstants;
 import colosseum.utility.arcade.GameType;
 import nl.rutgerkok.hammer.ChunkAccess;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
-import org.apache.commons.io.FileUtils;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,9 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Modified by Colosseum1316
@@ -37,7 +35,7 @@ public final class Unparser {
     final MapData mapData = getMapData(gameType, directory);
     generateMapData(mapData, directory);
     generateParsedMap(mapData, directory);
-    FileUtils.deleteQuietly(directory.toPath().resolve(WorldMapConstants.WORLDCONFIG_DAT).toFile());
+    directory.toPath().resolve(WorldMapConstants.WORLDCONFIG_DAT).toFile().delete();
   }
 
   private static MapData getMapData(final GameType gameType, final File directory) throws Exception {
@@ -155,7 +153,7 @@ public final class Unparser {
     // Data/Iron
     for (String woolCol : mapData.dataLocations.keySet()) {
       for (Location loc : mapData.getIronLocations(woolCol)) {
-        world.setWool(world.getBlock(loc), DyeColor.valueOf(woolCol.toUpperCase()).getWoolData());
+        world.setWool(world.getBlock(loc), TeamNames.getByDyeColor(woolCol.toUpperCase()).getWoolData());
         world.addIronPlate(world.getBlock(loc));
       }
     }
@@ -163,13 +161,11 @@ public final class Unparser {
     // Spawns/Gold
     for (String woolCol : mapData.teamLocsLocations.keySet()) {
       for (Location loc : mapData.getGoldLocations(woolCol)) {
-        world.setWool(world.getBlock(loc), Util.COLOR_MAP.entrySet()
-          .stream()
-          .filter(entry -> entry.getKey().equalsIgnoreCase(woolCol))
-          .map(Map.Entry::getValue)
+        world.setWool(world.getBlock(loc), Arrays.stream(TeamNames.values())
+          .filter(entry -> entry.name().equalsIgnoreCase(woolCol))
+          .map(TeamNames::getWoolData)
           .findFirst()
-          .map(integer -> (byte) (int) integer)
-          .orElseGet(() -> DyeColor.valueOf(woolCol.toUpperCase()).getWoolData()));
+          .orElseGet(() -> TeamNames.getByDyeColor(woolCol.toUpperCase()).getWoolData()));
         world.addGoldPlate(world.getBlock(loc));
       }
     }
@@ -179,11 +175,10 @@ public final class Unparser {
       for (Location loc : mapData.getSpongeLocations(name)) {
         try {
           final int id = Integer.parseInt(name);
-          final Material mat = Material.getMaterial(id);
-          if (mat == null) {
+          if (id > 197 || id < 0) {
             throw new IllegalStateException("Invalid material id " + id + " at " + name);
           }
-          world.setBlock(world.getBlock(loc), (short) mat.getId(), (byte) 0);
+          world.setBlock(world.getBlock(loc), (short) id, (byte) 0);
         } catch (NumberFormatException e) {
           world.setBlock(world.getBlock(loc), Util.MATERIAL_SPONGE, (byte) 0);
 
